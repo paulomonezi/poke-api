@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { CardWrapper } from "../components/card/styles";
 import * as C from "./styles"
 
-const url = 'https://pokeapi.co/api/v2/pokemon/100'
+const url = 'https://pokeapi.co/api/v2/pokemon/1'
 
 export const GetPokemonData = () => {
-    const [pokemon, setPokemon] = useState(null)
+    const [pokemon, setPokemon] = useState()
 
     useEffect(() => {
         fetch(url)
@@ -15,21 +16,50 @@ export const GetPokemonData = () => {
         <div>
             {pokemon && (
                 <div>
-                    <C.CardWrapper>
-                    {console.log(pokemon.types[0].type.name)}
-                    <C.Sprite src={pokemon.sprites.front_default}></C.Sprite>
-                    <h1>{pokemon.name}</h1>
-                    <span>#{pokemon.id}</span>
-                    <span>{pokemon.types[0].type.name}</span>
-                    <span>{pokemon.abilities[0].ability.name}</span>
-                    <span>{pokemon.abilities[1].ability.name}</span>
-                    <span>{pokemon.moves[0].move.name}</span>
-                    <span>{pokemon.moves[1].move.name}</span>
-                    <span>{pokemon.moves[2].move.name}</span>
-                    <span>{pokemon.moves[3].move.name}</span>
-                    </C.CardWrapper>
+                    <C.Card>
+                        <div>
+                            <C.Type>{pokemon.types[0].type.name}</C.Type>
+                            <C.Number>#{pokemon.id}</C.Number>
+                        </div>
+                        <C.Sprite src={pokemon.sprites.other['official-artwork'].front_default}></C.Sprite>
+                        <C.Name>{pokemon.name}</C.Name>
+                    </C.Card>
                 </div>
             )}
         </div>
     )
+}
+
+const urlList = 'https://pokeapi.co/api/v2/pokemon?limit=10&offset=0'
+
+export const GetPokemonList = () => {
+    const [pokemonList, setPokemonList] = useState()
+
+    useEffect(() => {
+        fetch(urlList)
+            .then((response) => response.json())
+            .then((json) => setPokemonList(json))
+
+    }, [])
+    // return (
+    //     <>
+    //         {pokemonList && (
+    //             pokemonList.results.map((pokemon, index) => {
+    //                 return (
+    //                     <CardWrapper key={index}>
+    //                         <C.Card>
+    //                             <div>
+    //                                 <C.Type>{pokemon.url}</C.Type>
+    //                                 <C.Number>#{pokemon.id}</C.Number>
+    //                             </div>
+    //                             <C.Sprite></C.Sprite>
+    //                             <C.Name>{pokemon.name}</C.Name>
+    //                         </C.Card>
+    //                     </CardWrapper>
+    //                 )
+    //             })
+
+    //         )}
+    //     </>
+    // )
 }
