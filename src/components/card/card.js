@@ -1,14 +1,14 @@
 import React from 'react'
-import { GetPokemonData } from '../../services/pokeapi'
+import { GetPokemonData, GetPokemonList } from '../../services/pokeapi'
 import * as C from './styles'
 
 export const Card = () => {
     return (
         <>
-        <C.PokemonCard>
+        <C.CardWrapper>
         <GetPokemonData></GetPokemonData>
-        </C.PokemonCard>
-        
+        <GetPokemonList></GetPokemonList>
+        </C.CardWrapper>
         </>
     )
 }

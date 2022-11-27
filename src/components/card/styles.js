@@ -1,8 +1,7 @@
 import styled from 'styled-components'
 
-export const PokemonCard = styled.div`
-height: 200px;
-width: 200px;
-background-color: lightcoral;
+export const CardWrapper = styled.div`
+max-height: 200px;
+max-width: 200px;
 color: black;
 `
