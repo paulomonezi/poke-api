@@ -1,65 +1,59 @@
-import React, { useEffect, useState } from "react";
-import { CardWrapper } from "../components/card/styles";
-import * as C from "./styles"
+import React, { useEffect, useState } from "react"
+import { CardWrapper } from "../components/card/styles"
+import * as C from './styles'
 
-const url = 'https://pokeapi.co/api/v2/pokemon/1'
+const url = 'https://pokeapi.co/api/v2/pokemon/'
+const urlList = 'https://pokeapi.co/api/v2/pokemon?limit=10&offset=0'
 
-export const GetPokemonData = () => {
-    const [pokemon, setPokemon] = useState()
 
-    useEffect(() => {
-        fetch(url)
-            .then((response) => response.json())
-            .then((json) => setPokemon(json))
-    }, [])
-    return (
-        <div>
-            {pokemon && (
-                <div>
-                    <C.Card>
-                        <div>
-                            <C.Type>{pokemon.types[0].type.name}</C.Type>
-                            <C.Number>#{pokemon.id}</C.Number>
-                        </div>
-                        <C.Sprite src={pokemon.sprites.other['official-artwork'].front_default}></C.Sprite>
-                        <C.Name>{pokemon.name}</C.Name>
-                    </C.Card>
-                </div>
-            )}
-        </div>
-    )
+async function getPokemonData(name) {
+    const response = await fetch(`${url}${name}`)
+    const pokemon = response.json()
+
+    return pokemon
 }
 
-const urlList = 'https://pokeapi.co/api/v2/pokemon?limit=10&offset=0'
+async function getPokemons() {
+    const response = await fetch(urlList)
+    const pokemonList = await response.json()
+    const results = pokemonList.results
+
+    return results
+}
+
+
 
 export const GetPokemonList = () => {
     const [pokemonList, setPokemonList] = useState()
 
     useEffect(() => {
-        fetch(urlList)
-            .then((response) => response.json())
-            .then((json) => setPokemonList(json))
-
+        const fetchData = async () => {
+            const pokemons = await getPokemons()
+            const pokemonNames = pokemons.map(pokemon => pokemon.name)
+            const paginatedPokemons = pokemonNames.map(async (pokemonName) => await getPokemonData(pokemonName))
+            const allPromises = await Promise.all(paginatedPokemons)
+            console.log(allPromises)
+        }
+        fetchData()
     }, [])
-    // return (
-    //     <>
-    //         {pokemonList && (
-    //             pokemonList.results.map((pokemon, index) => {
-    //                 return (
-    //                     <CardWrapper key={index}>
-    //                         <C.Card>
-    //                             <div>
-    //                                 <C.Type>{pokemon.url}</C.Type>
-    //                                 <C.Number>#{pokemon.id}</C.Number>
-    //                             </div>
-    //                             <C.Sprite></C.Sprite>
-    //                             <C.Name>{pokemon.name}</C.Name>
-    //                         </C.Card>
-    //                     </CardWrapper>
-    //                 )
-    //             })
-
-    //         )}
-    //     </>
-    // )
+    return (
+        <>
+            {pokemonList && (
+                pokemonList.results.map((pokemon, index) => {
+                    return (
+                        <CardWrapper key={index}>
+                            <h1>allPromises.name</h1>
+                            <C.Card>
+                                <div>
+                                    <C.Type>{pokemon.url}</C.Type>
+                                </div>
+                                <C.Sprite></C.Sprite>
+                                <C.Name>{pokemon.name}</C.Name>
+                            </C.Card>
+                        </CardWrapper>
+                    )
+                })
+            )}
+        </>
+    )
 }
