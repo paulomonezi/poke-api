@@ -6,7 +6,6 @@ import * as C from './styles'
 const url = 'https://pokeapi.co/api/v2/pokemon/'
 const urlList = 'https://pokeapi.co/api/v2/pokemon?limit=10&offset=0'
 
-
 async function getPokemonData(name) {
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`)
     const pokemon = response.json()
@@ -30,14 +29,12 @@ async function getAbilitiesDescription(url) {
     const fetchAbilities = await fetch(abilitiesUrl[0])
     const abilityArray = await fetchAbilities.json()
     const abilityDescription = await abilityArray.flavor_text_entries[0].flavor_text
-    // console.log(abilityDescription)
+
     return await abilityDescription
 }
 
-
 export const GetPokemonList = () => {
     const [pokemonList, setPokemonList] = useState([])
-    const [pokemonTypes, setPokemonTypes] = useState([]) //new changes to show two types, refactor later
 
     useEffect(() => {
         const fetchData = async () => {
@@ -56,36 +53,30 @@ export const GetPokemonList = () => {
         }
         fetchData()
 
-
-
     }, [])
     return (
         <>
             {
-                pokemonList.map((pokez, index) =>
-                    <Link key={index} to={`/pokemon/${pokez.name}`}>
+                pokemonList.map((pokemon, index) =>
+                    <Link key={index} to={`/pokemon/${pokemon.name}`}>
                         <CardWrapper >
                             <C.Card>
                                 <div>
                                     <C.Types>
-                                        {pokez.types.map((type, index) => <span key={index}>{type.type.name}</span>)}
+                                        {pokemon.types.map((type, index) => <span key={index}>{type.type.name}</span>)}
                                     </C.Types>
-                                    <C.Number>#{pokez.id}</C.Number>
+                                    <C.Number>#{pokemon.id}</C.Number>
                                 </div>
-                                <C.Sprite src={pokez.sprites.other['official-artwork'].front_default}></C.Sprite>
-                                <C.Name>{pokez.name}</C.Name>
+                                <C.Sprite src={pokemon.sprites.other['official-artwork'].front_default}></C.Sprite>
+                                <C.Name>{pokemon.name}</C.Name>
                             </C.Card>
                         </CardWrapper>
                     </Link>
                 )
             }
-
         </>
     )
 }
-
-export { getPokemonData }
-
 
 export const PokemonDetails = ({ pokeDetailsName }) => {
     const [pokemonDetails, setPokemonDetails] = useState()
@@ -97,7 +88,6 @@ export const PokemonDetails = ({ pokeDetailsName }) => {
             .then((response) => response.json())
             .then((json) => setPokemonDetails(json))
 
-
         fetch(`${url}${pokeDetailsName}`)
             .then((response) => response.json())
             .then(json => json.types)
@@ -106,18 +96,13 @@ export const PokemonDetails = ({ pokeDetailsName }) => {
                 getAbilitiesDescription(`${url}${pokeDetailsName}`))
             )
 
-        // fetch('https://pokeapi.co/api/v2/ability/65/')
-        //     .then((response) => response.json())
-        //     .then(json => json.flavor_text_entries)
-        //     .then(description => setPokemonAbilitiesDescription(description))
-
-
-
-
+        fetch('https://pokeapi.co/api/v2/ability/65/')
+            .then((response) => response.json())
+            .then(json => json.flavor_text_entries)
+            .then(description => setPokemonAbilitiesDescription(description[0].flavor_text))
     }, [])
 
     { console.log(pokemonAbilitiesDescription) }
-    // getAbilitiesDescription(`${url}${pokeDetailsName}`)
     return (
         <div>
             {pokemonDetails && (
@@ -130,7 +115,6 @@ export const PokemonDetails = ({ pokeDetailsName }) => {
                                     <C.Types>
                                         {pokemonTypes.map((type, index) => <span key={index}>{type.type.name}</span>)}
                                     </C.Types>
-
                                 </div>
                                 <C.Sprite src={pokemonDetails.sprites.other['official-artwork'].front_default}></C.Sprite>
                                 <C.Name>{pokemonDetails.name}</C.Name>
@@ -140,16 +124,10 @@ export const PokemonDetails = ({ pokeDetailsName }) => {
                     {pokemonDetails.abilities.map((ability, index) =>
                         <p key={index}>
                             habilidades: {ability.ability.name} blá blá blé
+                            {/* Rendering just the first letter, see whats hapening */}
                             {pokemonAbilitiesDescription[0]}
                         </p>
                     )}
-                    {/* {pokemonAbilitiesDescription.url.map((url, index) =>
-                        <p key={index}>
-
-                        </p>
-                    )} */}
-
-
                     {pokemonDetails.moves.map((move, index) =>
                         <p key={index}>
                             moves: {move.move.name}
@@ -160,3 +138,5 @@ export const PokemonDetails = ({ pokeDetailsName }) => {
         </div>
     )
 }
+
+export { getPokemonData }
