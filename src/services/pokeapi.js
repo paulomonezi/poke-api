@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react"
-import { json, Link } from "react-router-dom"
-import { CardWrapper } from "../components/card/styles"
-import * as C from './styles'
+import { Link } from "react-router-dom"
+import * as C from "../components/card/styles"
+import loadingImage from '../images/loading/loading.gif'
+
 
 const url = 'https://pokeapi.co/api/v2/pokemon/'
-const urlList = 'https://pokeapi.co/api/v2/pokemon?limit=10&offset=0'
+const urlList = 'https://pokeapi.co/api/v2/pokemon?limit=500&offset=0'
 
 async function getPokemonData(name) {
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`)
@@ -35,6 +36,7 @@ async function getAbilitiesDescription(url) {
 
 export const GetPokemonList = () => {
     const [pokemonList, setPokemonList] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -44,6 +46,7 @@ export const GetPokemonList = () => {
             const allPromises = await Promise.all(paginatedPokemons)
             setPokemonList(allPromises)
 
+            setIsLoading(false)
             //new changes to show two types, refactor later
             // fetch(`${url}${'rhydon'}`)
             //     .then((response) => response.json())
@@ -54,12 +57,22 @@ export const GetPokemonList = () => {
         fetchData()
 
     }, [])
+
+    if (isLoading) {
+        return (
+          <div>
+            <img src={loadingImage} alt="loading gif"/>
+            <span>Loading...</span>
+          </div>
+        );
+      }
     return (
         <>
+
             {
                 pokemonList.map((pokemon, index) =>
                     <Link key={index} to={`/pokemon/${pokemon.name}`}>
-                        <CardWrapper >
+                        <C.CardWrapper >
                             <C.Card>
                                 <div>
                                     <C.Types>
@@ -70,9 +83,10 @@ export const GetPokemonList = () => {
                                 <C.Sprite src={pokemon.sprites.other['official-artwork'].front_default}></C.Sprite>
                                 <C.Name>{pokemon.name}</C.Name>
                             </C.Card>
-                        </CardWrapper>
+                        </C.CardWrapper>
                     </Link>
                 )
+            
             }
         </>
     )
@@ -82,6 +96,7 @@ export const PokemonDetails = ({ pokeDetailsName }) => {
     const [pokemonDetails, setPokemonDetails] = useState()
     const [pokemonTypes, setPokemonTypes] = useState([])
     const [pokemonAbilitiesDescription, setPokemonAbilitiesDescription] = useState()
+    
 
     useEffect(() => {
         fetch(`${url}${pokeDetailsName}`)
@@ -102,13 +117,12 @@ export const PokemonDetails = ({ pokeDetailsName }) => {
             .then(description => setPokemonAbilitiesDescription(description[0].flavor_text))
     }, [])
 
-    { console.log(pokemonAbilitiesDescription) }
     return (
         <div>
             {pokemonDetails && (
                 <div>
                     <Link to={'/'}>
-                        <CardWrapper>
+                        <C.CardWrapper>
                             <C.Card>
                                 <div>
                                     <C.Number>#{pokemonDetails.id}</C.Number>
@@ -119,7 +133,7 @@ export const PokemonDetails = ({ pokeDetailsName }) => {
                                 <C.Sprite src={pokemonDetails.sprites.other['official-artwork'].front_default}></C.Sprite>
                                 <C.Name>{pokemonDetails.name}</C.Name>
                             </C.Card>
-                        </CardWrapper>
+                        </C.CardWrapper>
                     </Link>
                     {pokemonDetails.abilities.map((ability, index) =>
                         <p key={index}>
