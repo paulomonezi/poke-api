@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react"
+import { useContext } from "react"
 import { Link } from "react-router-dom"
 import * as C from "../components/card/styles"
+import { ThemeContext, themes } from "../contexts/theme-context"
 import loadingImage from '../images/loading/loading.gif'
 
 
@@ -37,6 +39,7 @@ async function getAbilitiesDescription(url) {
 export const GetPokemonList = () => {
     const [pokemonList, setPokemonList] = useState([])
     const [isLoading, setIsLoading] = useState(true)
+    const {theme} = useContext(ThemeContext)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -45,14 +48,8 @@ export const GetPokemonList = () => {
             const paginatedPokemons = pokemonNames.map(async (pokemonName) => await getPokemonData(pokemonName))
             const allPromises = await Promise.all(paginatedPokemons)
             setPokemonList(allPromises)
-
+            
             setIsLoading(false)
-            //new changes to show two types, refactor later
-            // fetch(`${url}${'rhydon'}`)
-            //     .then((response) => response.json())
-            //     .then(json => json.types)
-            //     .then(types => setPokemonTypes(types))
-
         }
         fetchData()
 
@@ -73,7 +70,7 @@ export const GetPokemonList = () => {
                 pokemonList.map((pokemon, index) =>
                     <Link key={index} to={`/pokemon/${pokemon.name}`}>
                         <C.CardWrapper >
-                            <C.Card>
+                            <C.Card style={{color: theme.color, backgroundColor: theme.background}}>
                                 <div>
                                     <C.Types>
                                         {pokemon.types.map((type, index) => <span key={index}>{type.type.name}</span>)}

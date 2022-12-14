@@ -1,13 +1,17 @@
 import './App.css';
-import { Card } from './components/card/card';
+import { ThemeTogglerButton } from './components/buttons/theme-toggler-button/theme-toggler-button';
+import { ThemeProvider } from './contexts/theme-context';
 import { GlobalStyle } from './css/reset';
-import { AppRoutes } from './pages/routes'
+import { AppRoutes } from './pages/routes/routes'
 
 function App() {
   return (
     <div>
-      <GlobalStyle/>
-      <AppRoutes />
+      <ThemeProvider>
+      <ThemeTogglerButton/>
+        <GlobalStyle />
+        <AppRoutes />
+      </ThemeProvider>
     </div>
   );
 }
